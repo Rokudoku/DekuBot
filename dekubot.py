@@ -13,7 +13,7 @@ async def on_ready():
 
 @dekubot.command(pass_context=True)
 async def hello(ctx):
-    """
+    """ A friendly greeting.
     Simply say: Hello <Caller>!.
     Get the caller's name by allowing the context to be passed through.
     From the context we can grab message -> author -> display_name.
@@ -33,7 +33,7 @@ async def roll(ctx):
 
 @dekubot.command()
 async def coinflip():
-    """
+    """ Flip a coin.
     50/50 chance of getting Heads/Tails.
     """
     n = random.randrange(0,2)
@@ -41,6 +41,13 @@ async def coinflip():
     if n == 0:
         result = 'Tails.'
     return await dekubot.say(orange_text(result))
+
+@dekubot.command()
+async def rage():
+    """
+    WHY DIDN'T I CRIT?!
+    """
+    return await dekubot.say("https://streamable.com/s9at")
 
 f = open('credentials.json', 'r')
 s = f.read()
