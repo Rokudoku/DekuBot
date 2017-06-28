@@ -2,10 +2,14 @@ from discord.ext.commands import Bot
 import random
 import json
 
+
+dekubot = Bot(command_prefix="!")
+
 def orange_text(string):
     return "```fix\n" + string + "```"
 
-dekubot = Bot(command_prefix="!")
+def is_me(m):
+    return m.author == dekubot.user
 
 @dekubot.event
 async def on_ready():
@@ -60,9 +64,6 @@ async def rage():
                              "<https://streamable.com/e2az>\n"
                              ":rage:")
 
-def is_me(m):
-    return m.author == dekubot.user
-
 @dekubot.command(pass_context=True)
 async def clear(ctx):
     """Clears recent replies from DekuBot.
@@ -73,6 +74,26 @@ async def clear(ctx):
     deleted = await dekubot.purge_from(ctx.message.channel, limit=100, check=is_me)
     return await dekubot.say(orange_text("Deleted {} message(s)".format(len(deleted))))
 
+@dekubot.command()
+async def emojis():
+    emojis = dekubot.get_all_emojis()
+    for emoji in emojis:
+        print(emoji.name)
+
+@dekubot.event
+async def on_message(message):
+    """ Reads every message waiting for a trigger.
+    Currently reacts to 'just one', 'just 1' and '1 game' with a custom emote.
+    """
+    just_one = False
+    if "just one" in message.content.lower():
+        just_one = True
+    elif "just 1" in message.content.lower():
+        just_one = True
+    elif "1 game" in message.content.lower():
+        just_one = True
+    if just_one == True:
+        return await dekubot.add_reaction(message, "samkappa:248440118652829696")
 
 f = open("credentials.json", "r")
 s = f.read()
