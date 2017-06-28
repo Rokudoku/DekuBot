@@ -3,13 +3,13 @@ import random
 import json
 
 def orange_text(string):
-    return '```fix\n' + string + '```'
+    return "```fix\n" + string + "```"
 
 dekubot = Bot(command_prefix="!")
 
 @dekubot.event
 async def on_ready():
-    print(dekubot.user.name + ' online!')
+    print(dekubot.user.name + " online!")
 
 @dekubot.command(pass_context=True)
 async def hello(ctx):
@@ -19,7 +19,7 @@ async def hello(ctx):
     From the context we can grab message -> author -> display_name.
     """
     caller = ctx.message.author.display_name
-    return await dekubot.say(orange_text('Hello {}!'.format(caller)))
+    return await dekubot.say(orange_text("Hello {}!".format(caller)))
 
 
 @dekubot.command(pass_context=True)
@@ -28,19 +28,29 @@ async def roll(ctx):
     Returns result in the format: <Caller> rolls <Number> (1-100)
     """
     caller = ctx.message.author.display_name
-    number = random.randrange(1,101)
-    return await dekubot.say(orange_text('{} rolls {} (1-100)'.format(caller, number)))
+    number = random.randint(1,100)
+    return await dekubot.say(orange_text("{} rolls {} (1-100)".format(caller, number)))
 
 @dekubot.command()
 async def coinflip():
     """ Flip a coin.
     50/50 chance of getting Heads/Tails.
     """
-    n = random.randrange(0,2)
-    result = 'Heads.'
+    n = random.randint(0,1)
+    result = "Heads."
     if n == 0:
-        result = 'Tails.'
+        result = "Tails."
     return await dekubot.say(orange_text(result))
+
+@dekubot.command()
+async def decide(*options):
+    """ !decide option1 option2 etc... Decides on one of the options randomly
+    """
+    if len(options) == 0:
+        return await dekubot.say(orange_text("You didn't give me any options!"))
+    else:
+        decision = random.choice(options)
+        return await dekubot.say(orange_text(decision))
 
 @dekubot.command()
 async def rage():
@@ -49,9 +59,9 @@ async def rage():
     """
     return await dekubot.say("https://streamable.com/s9at")
 
-f = open('credentials.json', 'r')
+f = open("credentials.json", "r")
 s = f.read()
-credentials = json.loads(s)['dekubot']
-token = credentials['token']
+credentials = json.loads(s)["dekubot"]
+token = credentials["token"]
 
 dekubot.run(token)
