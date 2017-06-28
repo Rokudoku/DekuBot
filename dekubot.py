@@ -54,10 +54,25 @@ async def decide(*options):
 
 @dekubot.command()
 async def rage():
+    """ Angery.
     """
-    WHY DIDN'T I CRIT?!
+    return await dekubot.say("<https://streamable.com/s9at>\n"
+                             "<https://streamable.com/e2az>\n"
+                             ":rage:")
+
+def is_me(m):
+    return m.author == dekubot.user
+
+@dekubot.command(pass_context=True)
+async def clear(ctx):
+    """Clears recent replies from DekuBot.
+    Only checks within the last 100 messages.
+    Also returns how many successful deletes there were.
+    REQUIRES MANAGE MESSAGES PERMISSION.
     """
-    return await dekubot.say("https://streamable.com/s9at")
+    deleted = await dekubot.purge_from(ctx.message.channel, limit=100, check=is_me)
+    return await dekubot.say(orange_text("Deleted {} message(s)".format(len(deleted))))
+
 
 f = open("credentials.json", "r")
 s = f.read()
