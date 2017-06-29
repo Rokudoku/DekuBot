@@ -1,15 +1,20 @@
 from discord.ext.commands import Bot
 import random
 import json
-
+from time import sleep
+from threading import Timer
 
 dekubot = Bot(command_prefix="!")
+dekubot.spr_flag = False
 
 def orange_text(string):
     return "```fix\n" + string + "```"
 
 def is_me(m):
     return m.author == dekubot.user
+
+def end_spr():
+    dekubot.spr_flag = False
 
 @dekubot.event
 async def on_ready():
@@ -24,7 +29,6 @@ async def hello(ctx):
     """
     caller = ctx.message.author.display_name
     return await dekubot.say(orange_text("Hello {}!".format(caller)))
-
 
 @dekubot.command(pass_context=True)
 async def roll(ctx):
@@ -73,6 +77,37 @@ async def clear(ctx):
     """
     deleted = await dekubot.purge_from(ctx.message.channel, limit=100, check=is_me)
     return await dekubot.say(orange_text("Deleted {} message(s)".format(len(deleted))))
+
+@dekubot.command()
+async def spr():
+    await dekubot.say(orange_text("Scizzors..."))
+    sleep(1)
+    await dekubot.say(orange_text("Paper..."))
+    sleep(1)
+    await dekubot.say(orange_text("Rock!"))
+    dekubot.spr_flag = True
+    t = Timer(2, end_spr)
+    t.start()
+    return
+
+@dekubot.event
+async def on_message(message):
+    # bot should never talk to itself
+    if dekubot.spr_flag == True:
+        print("true")
+    else:
+        print("false")
+    if dekubot.spr_flag == True and message.author is not dekubot.user:
+        if message.content is "s":
+            return await dekubot.send_message(message.channel, message.author.name + " picked scizzors")
+        elif message.content is "p":
+            return await dekubot.send_message(message.channel, message.author.name + " picked paper")
+        elif message.content is "r":
+            return await dekubot.send_message(message.channel, message.author.name + " picked rock")
+        else:
+            return
+    # to make sure the bot keeps looking for the other commands...
+    await dekubot.process_commands(message)
 
 f = open("credentials.json", "r")
 s = f.read()
