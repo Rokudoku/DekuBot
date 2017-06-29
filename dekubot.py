@@ -74,27 +74,6 @@ async def clear(ctx):
     deleted = await dekubot.purge_from(ctx.message.channel, limit=100, check=is_me)
     return await dekubot.say(orange_text("Deleted {} message(s)".format(len(deleted))))
 
-@dekubot.command()
-async def emojis():
-    emojis = dekubot.get_all_emojis()
-    for emoji in emojis:
-        print(emoji.name)
-
-@dekubot.event
-async def on_message(message):
-    """ Reads every message waiting for a trigger.
-    Currently reacts to 'just one', 'just 1' and '1 game' with a custom emote.
-    """
-    just_one = False
-    if "just one" in message.content.lower():
-        just_one = True
-    elif "just 1" in message.content.lower():
-        just_one = True
-    elif "1 game" in message.content.lower():
-        just_one = True
-    if just_one == True:
-        return await dekubot.add_reaction(message, "samkappa:248440118652829696")
-
 f = open("credentials.json", "r")
 s = f.read()
 credentials = json.loads(s)["dekubot"]
