@@ -3,6 +3,7 @@ import random
 import json
 
 dekubot = Bot(command_prefix="!")
+dekubot.cool_list = {}
 
 def orange_text(string):
     return "```fix\n" + string + "```"
@@ -56,7 +57,7 @@ async def rage():
 
 @dekubot.command(pass_context=True)
 async def ask(ctx):
-    """ Ask DekuBot a question.
+    """ Ask DekuBot a yes/no question.
     Similar to a magic 8 ball.
     """
     if len(ctx.message.content) == 4:
@@ -67,6 +68,41 @@ async def ask(ctx):
                "yeh nah", "dear god no", "hell no")
     decision = random.choice(replies)
     return await dekubot.say(orange_text(decision))
+
+@dekubot.command(pass_context=True)
+async def cool(ctx):
+    """ Tells you if you are cool or not. 1 chance only.
+    """
+    author = ctx.message.author.display_name
+    checked = dekubot.cool_list.keys()
+    if (len(checked) > 0) and author in checked:
+        return await dekubot.say(orange_text("I already told you if you are cool."))
+    cool = False
+    if author == "Rokudoku":
+        cool = True
+    else:
+        if random.randint(0,1) == 1:
+            cool = True
+    if cool == True:
+        dekubot.cool_list[author] = True
+        return await dekubot.say(orange_text("{} is cool.".format(author)))
+    else:
+        dekubot.cool_list[author] = False
+        return await dekubot.say(orange_text("{} is not cool.".format(author)))
+
+@dekubot.command()
+async def showcool():
+    """ Displays who is cool and not cool.
+    """
+    string = "These people are cool:"
+    for author in dekubot.cool_list.keys():
+        if dekubot.cool_list[author] == True:
+            string += "\n    -" + author
+    string += "\nThese people are not cool:"
+    for author in dekubot.cool_list.keys():
+        if dekubot.cool_list[author] == False:
+            string += "\n    -" + author
+    return await dekubot.say(orange_text(string))
 
 @dekubot.command(pass_context=True)
 async def clear(ctx):
