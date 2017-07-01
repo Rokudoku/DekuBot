@@ -6,13 +6,21 @@ dekubot = Bot(command_prefix="!")
 dekubot.cool_list = {}
 
 def orange_text(string):
+    """ Adds the necessary additions to the string to make it show up orange in discord.
+     Note: because this uses the code block 'setting' in discord, emotes do not show up properly.
+    """
     return "```fix\n" + string + "```"
 
 def is_me(m):
+    """ Returns true if the author of the message passed in is the bot.
+    """
     return m.author == dekubot.user
 
 @dekubot.event
 async def on_ready():
+    """ Prints to terminal when the bot is online.
+    This is just so we can see that the bot has started.
+    """
     print(dekubot.user.name + " online!")
 
 @dekubot.command(pass_context=True)
@@ -72,6 +80,8 @@ async def ask(ctx):
 @dekubot.command(pass_context=True)
 async def cool(ctx):
     """ Tells you if you are cool or not. 1 chance only.
+    Uses the cool_list dictionary assigned to the bot.
+    The dictionary is initialised as empty when the bot is started, so it resets when the bot does.
     """
     author = ctx.message.author.display_name
     checked = dekubot.cool_list.keys()
