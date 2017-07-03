@@ -27,9 +27,9 @@ async def on_ready():
 async def roll(ctx):
     """ Rolls a random value from 1-100.
     Returns result in the format: <Caller> rolls <Number> (1-100)
-    Get the caller's name by allowing the context to be passed through.
-    From the context we can grab message -> author -> display_name.
     """
+    # From the context we can grab message -> author -> display_name.
+    # Get the caller's name by allowing the context to be passed through.
     caller = ctx.message.author.display_name
     number = random.randint(1,100)
     return await dekubot.say(orange_text("{} rolls {} (1-100)".format(caller, number)))
@@ -80,9 +80,9 @@ async def ask(ctx):
 @dekubot.command(pass_context=True)
 async def cool(ctx):
     """ Tells you if you are cool or not. 1 chance only.
-    Uses the cool_list dictionary assigned to the bot.
-    The dictionary is initialised as empty when the bot is started, so it resets when the bot does.
     """
+    # Uses the cool_list dictionary assigned to the bot.
+    # The dictionary is initialised as empty when the bot is started, so it resets when the bot does.
     author = ctx.message.author.display_name
     checked = dekubot.cool_list.keys()
     if (len(checked) > 0) and author in checked:
