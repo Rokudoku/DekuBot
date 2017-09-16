@@ -4,6 +4,8 @@ import json
 
 dekubot = Bot(command_prefix="!")
 dekubot.cool_list = {}
+dekubot.cool_list_id = {}
+dekubot.master = ""
 
 def orange_text(string):
     """ Adds the necessary additions to the string to make it show up orange in discord.
@@ -59,9 +61,12 @@ async def decide(*options):
 async def rage():
     """ Angery.
     """
-    return await dekubot.say("<https://streamable.com/s9at>\n"
-                             "<https://streamable.com/e2az>\n"
-                             ":rage:")
+    # hiding the urls in the secrets file
+    f = open("secrets.json", "r")
+    s = f.read()
+    urls = json.loads(s)["urls"]
+    string = urls["url_1"] + "\n" + urls["url_2"] + "\n" + ":rage:"
+    return await dekubot.say(string)
 
 @dekubot.command(pass_context=True)
 async def ask(ctx):
@@ -83,21 +88,25 @@ async def cool(ctx):
     """
     # Uses the cool_list dictionary assigned to the bot.
     # The dictionary is initialised as empty when the bot is started, so it resets when the bot does.
+    # Had to include id to avoid being able to rename oneself.
     author = ctx.message.author.display_name
-    checked = dekubot.cool_list.keys()
-    if (len(checked) > 0) and author in checked:
+    author_id = ctx.message.author.id
+    checked = dekubot.cool_list_id.keys()
+    if (len(checked) > 0) and author_id in checked:
         return await dekubot.say(orange_text("I already told you if you are cool."))
     cool = False
-    if author == "Rokudoku":
+    if author_id == dekubot.master:
         cool = True
     else:
         if random.randint(0,1) == 1:
             cool = True
     if cool == True:
         dekubot.cool_list[author] = True
+        dekubot.cool_list_id[author_id] = True
         return await dekubot.say(orange_text("{} is cool.".format(author)))
     else:
         dekubot.cool_list[author] = False
+        dekubot.cool_list_id[author_id] = False
         return await dekubot.say(orange_text("{} is not cool.".format(author)))
 
 @dekubot.command()
@@ -124,6 +133,21 @@ async def clear(ctx):
     deleted = await dekubot.purge_from(ctx.message.channel, limit=100, check=is_me)
     return await dekubot.say(orange_text("Deleted {} message(s)".format(len(deleted))))
 
+@dekubot.command(pass_context=True)
+async def off(ctx):
+    """Attempt to turn off Dekubot.
+    """
+    author_id = ctx.message.author.id
+    if author_id == dekubot.master:
+        await dekubot.say(orange_text("Ok. Logging out..."))
+        return await dekubot.logout()
+    # the role we have for the creator of the server
+    elif "supreme leader" in [role.name.lower() for role in ctx.message.author.roles]:
+        await dekubot.say(orange_text("Yes supreme leader \‾ (`-` ). Logging out..."))
+        return await dekubot.logout()
+    else:
+        return await dekubot.say(orange_text("You can't tell me what to do!"))
+
 @dekubot.event
 async def on_message(message):
     # if i want to add any message to look out for
@@ -131,9 +155,11 @@ async def on_message(message):
     # to make sure the bot keeps looking for the other commands...
     await dekubot.process_commands(message)
 
-f = open("credentials.json", "r")
+# using json file to hide credentials
+f = open("secrets.json", "r")
 s = f.read()
 credentials = json.loads(s)["dekubot"]
 token = credentials["token"]
+dekubot.master = credentials["master"]
 
 dekubot.run(token)
